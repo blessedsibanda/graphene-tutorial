@@ -10,7 +10,7 @@ class User(graphene.ObjectType):
 class Query(graphene.ObjectType):
     hello = graphene.String()
     is_admin = graphene.Boolean()
-    users = graphene.List(User)
+    users = graphene.List(User, limit=graphene.Int())
 
     def resolve_hello(self, info):
         return 'world'
@@ -18,20 +18,20 @@ class Query(graphene.ObjectType):
     def resolve_is_admin(self, info):
         return True 
 
-    def resolve_users(self, info):
+    def resolve_users(self, info, limit):
         return [
             User(id="1", username="Fred", created_at=datetime.now()),
             User(id="2", username="Jane", created_at=datetime.now()),
             User(id="3", username="Samantha", created_at=datetime.now()),
             User(id="4", username="Blessed", created_at=datetime.now()),
-        ]
+        ][:limit]
 
 schema = graphene.Schema(query=Query, auto_camelcase=False)
 
 result = schema.execute(
     '''
     {
-        users {
+        users(limit: 1) {
             username
             id
             created_at
