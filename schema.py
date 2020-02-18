@@ -25,6 +25,6 @@ print(result.data['hello'])
 
 # convert result to json
 dictResult = dict(result.data.items())
-json_result = json.dumps(dictResult)
+json_result = json.dumps(dictResult, indent=2)
 
 print(json_result)
