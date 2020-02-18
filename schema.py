@@ -12,6 +12,11 @@ class User(graphene.ObjectType):
     username = graphene.String()
     created_at = graphene.DateTime(default_value=datetime.now())
 
+    avatar_url = graphene.String()
+    def resolve_avatar_url(self, info):
+        return 'https://cloudinary.com/{}/{}'.format(self.username,
+            self.id)
+
 class Query(graphene.ObjectType):
     hello = graphene.String()
     is_admin = graphene.Boolean()
@@ -62,17 +67,17 @@ schema = graphene.Schema(query=Query, mutation=Mutation)
 
 result = schema.execute(
     '''
-    mutation {
-        createPost(title: "Hello", content: "World") {
-            post {
-                title
-                content
-            }
+    {
+        users {
+            id
+            createdAt
+            username
+            avatarUrl
         }
     }
     ''',
     # variable_values={'limit': 3}
-    context={'is_anonymous': True}
+    # context={'is_anonymous': True}
 )
 
 print(result.errors)
