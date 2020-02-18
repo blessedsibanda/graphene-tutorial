@@ -3,6 +3,10 @@ import json
 from datetime import datetime
 import uuid
 
+class Post(graphene.ObjectType):
+    title = graphene.String()
+    content = graphene.String()
+
 class User(graphene.ObjectType):
     id = graphene.ID(default_value=str(uuid.uuid4()))
     username = graphene.String()
@@ -37,22 +41,35 @@ class CreateUser(graphene.Mutation):
         user = User(username=username)
         return CreateUser(user=user)
 
+class CreatePost(graphene.Mutation):
+    post = graphene.Field(Post)
+
+    class Arguments:
+        title = graphene.String()
+        content = graphene.String()
+
+    def mutate(self, info, title, content):
+        post = Post(title=title, content=content)
+        return CreatePost(post=post)
+
 class Mutation(graphene.ObjectType):
     create_user = CreateUser.Field()
+    create_post = CreatePost.Field()
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
 
 result = schema.execute(
     '''
-    query getUsersQuery ($limit: Int) {
-        users (limit: $limit) {
-            id
-            username
-            createdAt
+    mutation {
+        createPost(title: "Hello", content: "World") {
+            post {
+                title
+                content
+            }
         }
     }
     ''',
-    variable_values={'limit': 3}
+    # variable_values={'limit': 3}
 )
 
 print(result.errors)
