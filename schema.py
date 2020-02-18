@@ -1,5 +1,5 @@
 import graphene
-
+import json
 
 class Query(graphene.ObjectType):
     hello = graphene.String()
@@ -21,3 +21,10 @@ print(result.data.items())
 
 print(result.data)
 print(result.data['hello'])
+
+
+# convert result to json
+dictResult = dict(result.data.items())
+json_result = json.dumps(dictResult)
+
+print(json_result)
