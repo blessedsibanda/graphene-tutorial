@@ -26,21 +26,38 @@ class Query(graphene.ObjectType):
             User(id="4", username="Blessed", created_at=datetime.now()),
         ][:limit]
 
-schema = graphene.Schema(query=Query, auto_camelcase=False)
+class CreateUser(graphene.Mutation):
+    user = graphene.Field(User)
+
+    class Arguments:
+        username = graphene.String()
+
+    def mutate(self, info, username):
+        user = User(id="3",username=username, 
+            created_at=datetime.now())
+        return CreateUser(user=user)
+
+class Mutation(graphene.ObjectType):
+    create_user = CreateUser.Field()
+
+schema = graphene.Schema(query=Query, mutation=Mutation)
 
 result = schema.execute(
     '''
-    {
-        users {
-            username
-            id
-            created_at
+    mutation {
+        createUser(username: "Jeff") {
+            user {
+                id
+                username
+                createdAt
+            }
         }
     }
     '''
 )
 
-print(result.data.items())
+print(result.errors)
+# print(result.data.items())
 
 print(result.data)
 
