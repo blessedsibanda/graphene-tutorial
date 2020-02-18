@@ -49,6 +49,8 @@ class CreatePost(graphene.Mutation):
         content = graphene.String()
 
     def mutate(self, info, title, content):
+        if info.context.get('is_anonymous'):
+            raise Exception('Not authenticated!')
         post = Post(title=title, content=content)
         return CreatePost(post=post)
 
@@ -70,6 +72,7 @@ result = schema.execute(
     }
     ''',
     # variable_values={'limit': 3}
+    context={'is_anonymous': True}
 )
 
 print(result.errors)
