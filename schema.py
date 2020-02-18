@@ -11,12 +11,12 @@ class Query(graphene.ObjectType):
     def resolve_is_admin(self, info):
         return True 
 
-schema = graphene.Schema(query=Query)
+schema = graphene.Schema(query=Query, auto_camelcase=False)
 
 result = schema.execute(
     '''
     {
-        isAdmin
+        is_admin
     }
     '''
 )
